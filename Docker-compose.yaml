@@ -1,0 +1,14 @@
+services:
+  mysql:
+    image: mysql:8.0
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+    # environment:
+    #   MYSQL_ROOT_PASSWORD: example_password
+    #   MYSQL_DATABASE: example_db
+    #   MYSQL_USER: example_user
+    #   MYSQL_PASSWORD: example_password
+    # volumes:
+    #   - mysql_data:/var/lib/mysql
