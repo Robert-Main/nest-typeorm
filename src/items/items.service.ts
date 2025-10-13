@@ -5,6 +5,7 @@ import { EntityManager, Repository } from 'typeorm';
 import { Item } from './entities/item.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Listing } from "./entities/listing.entity";
+import { Comment } from "./entities/comment.entity";
 
 @Injectable()
 export class ItemsService {
@@ -14,24 +15,39 @@ export class ItemsService {
     private readonly entityManager: EntityManager,
   ) {}
   async create(createItemDto: CreateItemDto) {
-    const listing = new Listing({
+    const listing = this.entityManager.create(Listing, {
       ...createItemDto.listing,
-      rating: 0
-    })
-    const item = new Item({
-      ...CreateItemDto,
+      rating: 0,
+    });
+    await this.entityManager.save(listing);
+
+    const item = this.entityManager.create(Item, {
+      ...createItemDto,
+      comments: [],
       listing,
-    })
+    });
     await this.entityManager.save(item);
-    return item;
+
+    // Reload with relations
+    // return this.itemsRepository.findOne({
+    //   where: { id: item.id },
+    //   relations: ['listing'],
+    // });
   }
 
   async findAll() {
-    return this.itemsRepository.find();
+    const items = await this.itemsRepository.find({
+      relations: ['listing'],
+    });
+
+    return items;
   }
 
   asyncfindOne(id: number) {
-    return this.itemsRepository.findOneBy({ id });
+    return this.itemsRepository.findOne({
+      where: { id },
+      relations: ['listing', 'comments'],
+    });
   }
 
   async update(id: number, updateItemDto: UpdateItemDto) {
@@ -40,10 +56,19 @@ export class ItemsService {
       throw new Error(`Item with id ${id} not found`);
     }
     item.public = updateItemDto.public;
+
+    const comments = updateItemDto.comments.map(commentDto => {
+      const comment = new Comment();
+      Object.assign(comment, commentDto);
+      return comment;
+    });
+    item.comments = comments;
     await this.entityManager.save(item);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} item`;
+    const deleteItem = this.itemsRepository.delete(id)
+    console.log("deletwd item",deleteItem);
+    return deleteItem
   }
 }
