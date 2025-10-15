@@ -19,7 +19,7 @@ export class ItemsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.itemsService.asyncfindOne(+id);
+    return this.itemsService.findOne(+id);
   }
 
   @Patch(':id')

@@ -1,7 +1,16 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Listing } from "./listing.entity";
-import { AbstractEntity } from "src/database/abstract.entity";
-import { Comment } from "./comment.entity";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  OneToMany,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
+import { Listing } from './listing.entity';
+import { AbstractEntity } from '../../database/abstract.entity';
+import { Comment } from './comment.entity';
+import { Tag } from "./tag.entity";
 
 @Entity()
 export class Item extends AbstractEntity<Item> {
@@ -15,6 +24,10 @@ export class Item extends AbstractEntity<Item> {
   @JoinColumn()
   listing: Listing;
 
-  @OneToOne(() => Comment, comment => comment.item, { cascade: true })
-  comments: Comment[]
+  @OneToMany(() => Comment, (comment) => comment.item, { cascade: true })
+  comments: Comment[];
+
+  @ManyToMany(() => Tag, { cascade: true })
+  @JoinTable()
+  tags: Tag[];
 }

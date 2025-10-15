@@ -1,12 +1,12 @@
-import { AbstractEntity } from "src/database/abstract.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Item } from "./item.entity";
+import { AbstractEntity } from '../../database/abstract.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Item } from './item.entity';
 
 @Entity()
 export class Comment extends AbstractEntity<Comment> {
-    @Column({default: ''})
-    context: string;
+  @Column({ default: '' })
+  context: string;
 
-    @ManyToOne(() => Item, item => item.comments)
-    item: Item;
+  @ManyToOne(() => Item, (item) => item.comments)
+  item: Item;
 }
